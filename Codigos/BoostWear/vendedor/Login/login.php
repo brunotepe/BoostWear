@@ -14,7 +14,7 @@
         <!-- Custom CSS -->
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-            <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script
         
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -48,13 +48,12 @@
                             if ($_REQUEST['password'] == $linha[3]) {
                                 $_SESSION['usuario'] = $_REQUEST['username'];
                                 $_SESSION['codigo'] = $linha[0];
-                                $_SESSION['tipo']="V";
+                                $_SESSION['tipo'] = "V";
                                 header("Location:..\produtos\cadastroProdutos.php");
                             }
-                        } else {
-                            echo "<script>alert('Usuario não Cadastrado!');</script>";
                         }
                     }
+                    echo "<script>alert('Usuario não Cadastrado!');</script>";
                 }
             }
             ?>

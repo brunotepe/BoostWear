@@ -50,10 +50,9 @@
                             $_SESSION['tipo']="V";
                             header("Location:../vendedor/inicial/vendedor.php");
                         }
-                    } else {
-                        echo "<script>alert('Usuario não Cadastrado!');</script>";
                     }
                 }
+                echo "<script>alert('Usuario não Cadastrado!');</script>";
             }
         }
         ?>
