@@ -71,9 +71,6 @@
                             echo "<li>";
                             echo "<a href='#'>" . $_SESSION['usuario'] . "</a>";
                             echo "</li>";
-                            echo "<li>";
-                            echo "<a href='?id=1'>Sair</a>";
-                            echo "</li>";
                         } else {
                             echo "<li>";
                             echo "<a href='..\..\loginCliente\loginCliente.php'>Login</a>";

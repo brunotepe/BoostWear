@@ -28,6 +28,7 @@
 
     <body>
         <?php
+        require_once("class/class.phpmailer.php");
         session_start();
         $pdo = new PDO('mysql:host=localhost;dbname=boostwear', 'root', '') or die("Falha ao estabelecer ligação com a base de dados!\n");
         $stmt = $pdo->prepare("SELECT * FROM produto");
@@ -44,20 +45,45 @@
                 break;
             }
         }
+        $stmt3 = $pdo->prepare("SELECT * FROM cliente");
+        $stmt3->execute();
+        while ($aux2 = $stmt3->fetch()) {
+            if ($aux2[0] == $_SESSION['codigo']) {
+                break;
+            }
+        }
         if (isset($_REQUEST['go']) && $_REQUEST['go'] != "") {
-            $headers = "MIME-Version: 1.1\r\n";
-            $headers .= "Content-type: text/plain; charset=UTF-8\r\n";
-            $headers .= "From: brunotepe@hotmail.com\r\n"; // remetente
-            $headers .= "Return-Path: brunotepe@hotmail.com\r\n"; // return-path
-            $envio = mail("" . $_GET['email'] . "", "Interesse em Produto", "" . $_REQUEST['texto'] . "", $headers);
+            try {
+                $mail = new PHPMailer(true);
+                $mail->IsSMTP();
 
-            if ($envio)
-                echo "Mensagem enviada com sucesso";
-            else
-                echo "A mensagem não pode ser enviada";
+                $mail->Host = 'smtp-mail.outlook.com';
+                $mail->SMTPAuth = true;
+                $mail->Port = 587;
+                $mail->Username = 'boostwear@hotmail.com';
+                $mail->Password = '32154866@';
+
+                $mail->SetFrom('boostwear@hotmail.com', 'BoostWear');
+                $mail->AddReplyTo('boostwear@hotmail.com', 'BoostWear');
+                $mail->Subject = 'Interesse em Roupas';
+
+                $mail->AddAddress('brunotepe@hotmail.com', 'Bruno');
+
+                $corpoEmail = "Olá estou interessado neste produto " . $linha[1] . ", seu codigo eh " . $linha[0] .
+                        ".\n\n\n" . $_REQUEST['texto'] . "\n\n\nEntre em Contato Comigo:\n"
+                        . "Email: " . $aux2[4] . "\nNome: " . $aux2[1] . "\nTelefone: " . $aux2[2] . "";
+
+                $mail->MsgHTML($corpoEmail);
+
+                $mail->Send();
+
+                echo "Mensagem enviada com sucesso</p>\n";
+            } catch (phpmailerException $e) {
+                echo $e->errorMessage(); //Mensagem de erro costumizada do PHPMailer
+            }
         }
 
-        echo '<form action = "contato.php?go=1&email=' . $aux[4] . '&meuemail=1" method = "POST">';
+        echo '<form action = "contato.php?go=1" method = "POST">';
         ?>
         <!-- Navigation -->
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -89,7 +115,7 @@
                             $_SESSION['usuario'] = "";
                         }
                         if (isset($_SESSION['usuario']) && $_SESSION['usuario'] != "") {
-                            if ($_SESSION['tipo'] != '') {
+                            if (isset($_SESSION['tipo']) && $_SESSION['tipo'] != '') {
                                 echo "<li>";
                                 echo "<a href='../../vendedor/edicaoProdutos/intermedio/intermedio.php'>" . $_SESSION['usuario'] . "</a>";
                                 echo "</li>";

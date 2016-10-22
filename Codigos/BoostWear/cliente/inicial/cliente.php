@@ -415,7 +415,7 @@
                                         </br></br>
                                         <div class="control-group">
                                             <div class="controls">
-                                                <input id="email" name="nome" type="text" placeholder="Pesquisa" class="form-control" required style="width:449px">
+                                                <input id="email" name="pesquisa" type="text" placeholder="Pesquisa" class="form-control" required style="width:449px">
                                             </div>
                                         </div>
                                         <a href="#"><input style="position:absolute; top:118px;left:465px; "type="submit" value="Pesquisar" class="btn btn-inverse"></a>
@@ -432,13 +432,15 @@
                         $qt = 0;
                         $cont = 0;
                         $auxiliar = null;
-                        if ((!isset($_REQUEST['F1']) && !isset($_REQUEST['F2']) && !isset($_REQUEST['estacao']) && !isset($_REQUEST['materias']) && !isset($_REQUEST['cor']) && !isset($_REQUEST['tamanho']) && !isset($_GET['tipo']))) {
+                        if ((!isset($_REQUEST['F1']) && !isset($_REQUEST['F2']) && !isset($_REQUEST['estacao']) && !isset($_REQUEST['materias']) &&
+                                !isset($_REQUEST['cor']) && !isset($_REQUEST['tamanho']) && !isset($_GET['tipo']) && !isset($_REQUEST['pesquisa']))) {
                             $stmt = $pdo->prepare("SELECT * FROM view_produto");
                             $stmt->execute();
                             echo "<div class = 'row'>";
                             while ($linha = $stmt->fetch()) {
                                 if (!isset($_REQUEST['num'])) {
                                     if ($qt == 3) {
+                                        echo "</div>";
                                         break;
                                     }
                                     $cont++;
@@ -659,38 +661,73 @@
                             if ((isset($ordenado) && count($ordenado) == 0) || !isset($ordenado)) {
                                 $ordenado = $auxiliar;
                             }
-                            echo "<div class = 'col-md-4 portfolio-item'>";
-                            for ($i = 0; $i < count($ordenado); $i++) {
-                                $stmt = $pdo->prepare("SELECT * FROM view_produto");
-                                $stmt->execute();
-                                if (count($ordenado) == 0) {
-                                    $stmt2 = $pdo->prepare("SELECT * FROM produto");
-                                    $stmt2->execute();
-                                    while ($linha = $stmt2->fetch()) {
-                                        $ordenado[] = $linha[0];
-                                        $final_n[$linha[0]] = $linha[1];
-                                        $final_p[$linha[0]] = $linha[6];
+                            if (!isset($_REQUEST['pesquisa'])) {
+                                echo "<div class = 'row'>";
+                                for ($i = 0; $i < count($ordenado); $i++) {
+                                    $stmt = $pdo->prepare("SELECT * FROM view_produto");
+                                    $stmt->execute();
+                                    if ($ordenado[0] == "" && count($ordenado) == 1) {
+                                        $stmt2 = $pdo->prepare("SELECT * FROM produto");
+                                        $stmt2->execute();
+                                        while ($linha = $stmt2->fetch()) {
+                                            $ordenado[] = $linha[0];
+                                            $final_n[$linha[0]] = $linha[1];
+                                            $final_p[$linha[0]] = $linha[6];
+                                        }
                                     }
-                                }
-                                while ($linha = $stmt->fetch()) {
-                                    if ($linha[0] == $ordenado[$i]) {
-                                        if ($qt == 3) {
+                                    while ($linha = $stmt->fetch()) {
+                                        if ($linha[0] == $ordenado[$i]) {
+                                            if ($qt == 3) {
+                                                echo "</div>";
+                                                break;
+                                            }
+                                            $cont++;
+                                            echo "<div class = 'col-md-4 portfolio-item'>";
+                                            echo "<a href = '..\..\item\detalhes\detalhes.php?help=" . $linha[0] . "'>";
+                                            echo '<img width=297 heigh=170 class = "img-responsive" src = "..\..\vendedor\produtos\img\\' . $linha[5] . '" alt = "">';
+                                            echo "</a>";
+                                            echo "<h3>";
+                                            echo "<a href = '..\..\item\detalhes\detalhes.php?help=" . $linha[0] . "'>" . $linha[1] . "</a>";
+                                            echo "</h3>";
+                                            echo "<p>" . $linha[2] . "</p>";
+                                            echo "</div>";
+
+                                            if ($cont == 3) {
+                                                echo "</div>";
+                                                echo "<div class = 'row'>";
+                                                $cont = 0;
+                                                $qt++;
+                                            }
                                             break;
                                         }
-                                        $cont++;
-                                        echo "<a href = '..\..\item\detalhes\detalhes.php?help=" . $linha[0] . "'>";
-                                        echo '<img width=297 heigh=170 class = "img-responsive" src = "..\..\vendedor\produtos\img\\' . $linha[5] . '" alt = "">';
-                                        echo "</a>";
-                                        echo "<h3>";
-                                        echo "<a href = '..\..\item\detalhes\detalhes.php?help=" . $linha[0] . "'>" . $linha[1] . "</a>";
-                                        echo "</h3>";
-                                        echo "<p>" . $linha[2] . "</p>";
+                                    }
+                                }
+                            }
+                            if (isset($_REQUEST['pesquisa']) && $_REQUEST['pesquisa'] != "") {
+                                $stmt = $pdo->prepare("SELECT * FROM view_produto where nome_produto like '%" . $_REQUEST['pesquisa'] . "%'");
+                                $stmt->execute();
+                                echo "<div class = 'row'>";
+                                while ($linha = $stmt->fetch()) {
+                                    if ($qt == 3) {
                                         echo "</div>";
+                                        break;
+                                    }
+                                    $cont++;
+                                    echo "<div class = 'col-md-4 portfolio-item'>";
+                                    echo "<a href = '..\..\item\detalhes\detalhes.php?help=" . $linha[0] . "'>";
+                                    echo '<img width=297 heigh=170 class = "img-responsive" src = "..\..\vendedor\produtos\img\\' . $linha[5] . '" alt = "">';
+                                    echo "</a>";
+                                    echo "<h3>";
+                                    echo "<a href = '..\..\item\detalhes\detalhes.php?help=" . $linha[0] . "'>" . $linha[1] . "</a>";
+                                    echo "</h3>";
+                                    echo "<p>" . $linha[2] . "</p>";
+                                    echo "</div>";
 
-                                        if ($cont == 3) {
-                                            $cont = 0;
-                                            $qt++;
-                                        }
+                                    if ($cont == 3) {
+                                        echo "</div>";
+                                        echo "<div class = 'row'>";
+                                        $cont = 0;
+                                        $qt++;
                                     }
                                 }
                             }
